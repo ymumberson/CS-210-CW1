@@ -112,6 +112,12 @@ public class Client implements Runnable {
 	public void run() {
 		System.out.println("Starting client[" + name + "].");
 		
+		testBuySell();
+		
+		System.out.println("Finishing client[" + name + "].");
+	}
+	
+	private void testBuySell() {
 		for (int i=0; i<100; i++) {
 			int rnd = (int)(Math.random()*2);
 			//System.out.println(rnd);
@@ -126,8 +132,6 @@ public class Client implements Runnable {
 				buyRandomShares();	
 			}
 		}
-		
-		System.out.println("Finishing client[" + name + "].");
 	}
 	
 	private void buyRandomShares() {
