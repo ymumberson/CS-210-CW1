@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 
 public class Company {
@@ -6,6 +7,8 @@ public class Company {
 	private float availableNumberOfShares;
 	private float price;
 	private Semaphore lock;
+	private float storedBalance;
+	private ArrayList<Float> notifyPrices;
 	
 	public Company() {
 		
@@ -17,6 +20,7 @@ public class Company {
 		this.setAvailableShares(availableShares);
 		this.setPrice(price);
 		this.lock = new Semaphore(1);
+		this.notifyPrices = new ArrayList<Float>();
 	}
 	
 	public void setName(String name) {
@@ -46,6 +50,7 @@ public class Company {
 	public synchronized boolean incrementAvailableShares(int n) {
 		if (availableNumberOfShares+n <= totalNumberOfShares) {
 			availableNumberOfShares+=n;
+			storedBalance-=price*n;
 			System.out.println(name + " just regained " + n + " shares! Now "
 					+ availableNumberOfShares + " shares left!");
 			return true;
@@ -57,6 +62,7 @@ public class Company {
 	public synchronized boolean decrementAvailableShares(int n) {
 		if (availableNumberOfShares-n >= 0) {
 			availableNumberOfShares-=n;
+			storedBalance+= price*n;
 			System.out.println(name + " just sold " + n + " shares! Only "
 					+ availableNumberOfShares + " shares left!");
 			return true;
@@ -83,18 +89,41 @@ public class Company {
 		lock.release();
 	}
 	
+	public void waitForPriceToDrop(float amnt) {
+		while (price > amnt) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalMonitorStateException e2) {
+				System.out.println("Illegal monitor state!" + Thread.currentThread().getName());
+				lock.release();
+				System.exit(0);
+			}
+		}
+	}
+	
 	public synchronized void setPrice(float number) {
 		this.price = number;
+		System.out.println(name + "'s price has changed to " + number + "!");
+		notifyAll();
+		//System.out.println(name + "'s price has been changed to " + number + ".");
 	}
 	
 	public float getPrice() {
 		return this.price;
 	}
 	
+	public float getStoredBalance() {
+		return this.storedBalance;
+	}
+	
 	public String toString() {
 		return name + ",\n" +
 				"- Total Shares: " + totalNumberOfShares + ",\n" +
 				"- Available Shares: " + availableNumberOfShares + ",\n" +
-				"- Price: " + price + ".";
+				"- Price: " + price + ",\n" +
+				"- Stored Balance: " + storedBalance + ".";
 	}
 }

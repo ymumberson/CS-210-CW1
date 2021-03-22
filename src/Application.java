@@ -1,18 +1,23 @@
 
 public class Application {
 	public static void main(String[] args) throws InterruptedException {
-		//Setup
+		testBuySell();
+		//testBuyLowSellHigh();
+	}
+	
+	public static void testBuyLowSellHigh() throws InterruptedException {
 		int numClients = 5;
 		StockExchange s = new StockExchange();
-		Company comp1 = new Company("Company 1", 10, 10, 3.14f);
-		Company comp2 = new Company("Company 2", 25, 25, 2.03f);
-		Company comp3 = new Company("Company 3", 100, 100, 0.87f);
+		Company comp1 = new Company("Company 1", 10, 10, 100f);
+		Company comp2 = new Company("Company 2", 25, 25, 100f);
+		Company comp3 = new Company("Company 3", 100, 100, 100f);
 		Client[] clients = new Client[numClients];
 		Thread[] threads = new Thread[numClients];
 		for (int i=0; i<numClients; i++) {
 			clients[i] = new Client(String.valueOf(i),s);
 			threads[i] = new Thread(clients[i]);
 			threads[i].setDaemon(true);
+			threads[i].setName("t" + i);
 			s.addClient(clients[i]);
 		}
 		//Client client1 = new Client("Andy",s);
@@ -31,12 +36,70 @@ public class Application {
 		}
 		//t1.start();
 		
+		for (int i=0; i<100; i++) {
+			//System.out.println(i);
+			comp1.setPrice((float)Math.random()*100);
+			comp2.setPrice((float)Math.random()*100);
+			comp3.setPrice((float)Math.random()*100);
+		}
+		System.out.println("<Application> Finished price changes. </Application>");
+		
 		//Finishing processes
 		for (int i=0; i<numClients; i++) {
 			threads[i].join();
 		}
 		System.out.println("Execution has finished.\n");
 		System.out.println(s);
-		//t1.join();
+	}
+	
+	public static void testBuySell() throws InterruptedException {
+		//Setup
+				int numClients = 5;
+				StockExchange s = new StockExchange();
+				Company comp1 = new Company("Company 1", 10, 10, 3.14f);
+				Company comp2 = new Company("Company 2", 25, 25, 2.03f);
+				Company comp3 = new Company("Company 3", 100, 100, 0.87f);
+				Client[] clients = new Client[numClients];
+				Thread[] threads = new Thread[numClients];
+				for (int i=0; i<numClients; i++) {
+					clients[i] = new Client(String.valueOf(i),s);
+					threads[i] = new Thread(clients[i]);
+					threads[i].setDaemon(true);
+					s.addClient(clients[i]);
+				}
+				//Client client1 = new Client("Andy",s);
+				//Thread t1 = new Thread(client1);
+				//t1.setDaemon(true);
+				s.registerCompany(comp1, comp1.getAvailableShares());
+				s.registerCompany(comp2, comp2.getAvailableShares());
+				s.registerCompany(comp3, comp3.getAvailableShares());
+				//s.addClient(client1);
+				
+				System.out.println(s);
+				
+				//Starting processes
+				for (int i=0; i<numClients; i++) {
+					threads[i].start();
+				}
+				//t1.start();
+				
+				for (int i=0; i<100; i++) {
+					//System.out.println(i);
+//					comp1.setPrice((float)Math.random()*100);
+//					comp2.setPrice((float)Math.random()*100);
+//					comp3.setPrice((float)Math.random()*100);
+					s.changePriceBy(comp1, 50-(float)Math.random()*100);
+					s.changePriceBy(comp2, 50-(float)Math.random()*100);
+					s.changePriceBy(comp3, 50-(float)Math.random()*100);
+				}
+				System.out.println("<Application> Finished price changes. </Application>");
+				
+				//Finishing processes
+				for (int i=0; i<numClients; i++) {
+					threads[i].join();
+				}
+				System.out.println("Execution has finished.\n");
+				System.out.println(s);
+				//t1.join();
 	}
 }

@@ -34,21 +34,34 @@ public class Client implements Runnable {
 	}
 	
 	public boolean buy(Company company, float numberOfShares) {
+		System.out.println("Client[" + name + "] is attempting to buy " + numberOfShares + " shares from " + company.getName() + ".");
 		company.acquireLock();
+		
+		//If can afford
+		if (company.getPrice()*numberOfShares > balance) {
+			System.out.println("Client[" + name + "] can't afford " + numberOfShares + " shares from " + company.getName() + ".");
+			company.releaseLock();
+			return false;
+		}
+		
 		if (company.decrementAvailableShares((int) numberOfShares)) {
+			System.out.println("Client[" + name + "] successfully bought " + numberOfShares + " shares from " + company.getName() + " for £" + (numberOfShares*company.getPrice()) + ".");
 			incrementStocks(company,numberOfShares);
 			balance-= company.getPrice()*numberOfShares;
 			company.releaseLock();
 			return true;
 		} else {
+			System.out.println("Client[" + name + "] failed in buying " + numberOfShares + " shares from " + company.getName() + ".");
 			company.releaseLock();
 			return false;
 		}
 	}
 	
 	public boolean sell(Company company, float numberOfShares) {
+		System.out.println("Client[" + name + "] is attempting to sell " + numberOfShares + " shares to " + company.getName() + ".");
 		company.acquireLock();
 		if (company.incrementAvailableShares((int) numberOfShares)) {
+			System.out.println("Client[" + name + "] successfully sold " + numberOfShares + " shares to " + company.getName() + " for £" + (company.getPrice()*numberOfShares) + ".");
 			incrementStocks(company,-numberOfShares);
 			balance+= company.getPrice()*numberOfShares;
 			company.releaseLock();
@@ -60,7 +73,63 @@ public class Client implements Runnable {
 	}
 	
 	public boolean buyLow(Company company, float numberOfShares, float limit) {
-		return false;//temp
+		company.acquireLock();
+//		if (company.getPrice() <= limit) {
+//			if (company.decrementAvailableShares((int) numberOfShares)) {
+//				incrementStocks(company,numberOfShares);
+//				balance-= company.getPrice()*numberOfShares;
+//				company.releaseLock();
+//				return true;
+//			} else {
+//				company.releaseLock();
+//				return false;
+//			}
+//		} else {
+//			company.releaseLock();
+//			try {
+//				company.wait();
+//				this.buyLow(company, numberOfShares, limit);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+		
+		//System.out.println();
+//		synchronized (company) {
+//			while (company.getPrice() > limit) {
+//				company.releaseLock();
+//				//System.out.println("Price of " + company.getName() + "'s shares is too high, client[" + name + "] is waiting for them to drop!");
+//				try {
+//					company.wait();
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				System.out.println("Client[" + name + "] was notified.");
+//				company.acquireLock();
+//			}
+//		}
+		
+		if (company.getPrice() > limit) {
+			company.releaseLock();
+			System.out.println("Client[" + name + "] is going to wait.");
+			company.waitForPriceToDrop(limit);
+		}
+		
+		//Doing the buying
+		if (company.decrementAvailableShares((int) numberOfShares)) {
+			incrementStocks(company,numberOfShares);
+			balance-= company.getPrice()*numberOfShares;
+			company.releaseLock();
+			System.out.println("Client[" + name + "] successfully bought " + numberOfShares + " shares from " + company.getName() + ".");
+			return true;
+		} else {
+			company.releaseLock();
+			System.out.println("Client[" + name + "] failed in buying " + numberOfShares + " shares from " + company.getName() + ".");
+			return false;
+		}
+		
 	}
 	
 	public boolean sellHigh(Company company, float numberOfShares, float limit) {
@@ -113,8 +182,18 @@ public class Client implements Runnable {
 		System.out.println("Starting client[" + name + "].");
 		
 		testBuySell();
+		//testBuyLowSellHigh();
 		
 		System.out.println("Finishing client[" + name + "].");
+	}
+	
+	public void testBuyLowSellHigh() {
+		Company c = stockExchange.getRandomCompany();
+		int sharesToBuy = (int) (Math.random() * 11);
+		float p = (float) Math.random() * 50;
+		System.out.println("Client[" + name + "] wants " + c.getName() + "'s price to drop below " + p + ".");
+		buyLow(c,sharesToBuy,p);
+		System.out.println("Client[" + name + "] has bought their shares.");
 	}
 	
 	private void testBuySell() {
@@ -138,11 +217,11 @@ public class Client implements Runnable {
 		Company c = stockExchange.getRandomCompany();
 		//int sharesToBuy = (int) (Math.random() * stockExchange.getMaxAffordableShares(c, balance));
 		int sharesToBuy = (int) (Math.random() * 11);
-			System.out.println("Client[" + name + "] is attempting to buy " + sharesToBuy + " shares from " + c.getName() + ".");
+			//System.out.println("Client[" + name + "] is attempting to buy " + sharesToBuy + " shares from " + c.getName() + ".");
 		if (buy(c, sharesToBuy)) {
-			System.out.println("Client[" + name + "] successfully bought " + sharesToBuy + " shares from " + c.getName() + ".");
+			//System.out.println("Client[" + name + "] successfully bought " + sharesToBuy + " shares from " + c.getName() + ".");
 		} else {
-			System.out.println("Client[" + name + "] failed in buying " + sharesToBuy + " shares from " + c.getName() + ".");
+			//System.out.println("Client[" + name + "] failed in buying " + sharesToBuy + " shares from " + c.getName() + ".");
 		}
 	}
 	
@@ -154,9 +233,9 @@ public class Client implements Runnable {
 		int rnd = (int)(Math.random()*companies.size());
 		Company c = companies.get(rnd);
 		int numSharesToSell = (int)(Math.random()*shares.get(c));
-		System.out.println("Client[" + name + "] is attempting to sell " + numSharesToSell + " shares to " + c.getName() + ".");
+		//System.out.println("Client[" + name + "] is attempting to sell " + numSharesToSell + " shares to " + c.getName() + ".");
 		sell(c, numSharesToSell);
-		System.out.println("Client[" + name + "] successfully sold " + numSharesToSell + " shares to " + c.getName() + ".");
+		//System.out.println("Client[" + name + "] successfully sold " + numSharesToSell + " shares to " + c.getName() + ".");
 	}
 	
 	public String toString() {
@@ -166,7 +245,7 @@ public class Client implements Runnable {
 		} else {
 			ArrayList<Company> companies = new ArrayList<Company>(shares.keySet());
 			for (int i = 0; i<companies.size(); i++) {
-				str += "\n- " + shares.get(companies.get(i)) + " shares at " + companies.get(i).getName();
+				str += "\n- " + shares.get(companies.get(i)) + " shares at " + companies.get(i).getName() + " (total= " + (companies.get(i).getPrice()*shares.get(companies.get(i))) + ")";
 			}
 		}
 		return str;

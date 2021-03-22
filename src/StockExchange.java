@@ -105,7 +105,6 @@ public class StockExchange {
 			str += c + "\n";
 			totalBalance += c.getBalance();
 			totalSharesSold += c.getNumShares();
-			shareBalance += c.getShareBalance();
 		}
 		str += "\nCompanies ->\n";
 		ArrayList<Company> comps = new ArrayList<Company>(companies.keySet());
@@ -113,6 +112,7 @@ public class StockExchange {
 			Company c = comps.get(i);
 			str += c + "\n";
 			totalSharesUnsold += c.getAvailableShares();
+			shareBalance += c.getStoredBalance();
 		}
 		
 		str += "\nRemaining Balance: " + totalBalance + "\n" +
