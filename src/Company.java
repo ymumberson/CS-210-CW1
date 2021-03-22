@@ -89,7 +89,7 @@ public class Company {
 		lock.release();
 	}
 	
-	public void waitForPriceToDrop(float amnt) {
+	public synchronized void waitForPriceToDrop(float amnt) {
 		while (price > amnt) {
 			try {
 				wait();
@@ -97,7 +97,7 @@ public class Company {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IllegalMonitorStateException e2) {
-				System.out.println("Illegal monitor state!" + Thread.currentThread().getName());
+				System.out.println("<CRASH> Illegal monitor state!" + Thread.currentThread().getName());
 				lock.release();
 				System.exit(0);
 			}
@@ -106,7 +106,7 @@ public class Company {
 	
 	public synchronized void setPrice(float number) {
 		this.price = number;
-		System.out.println(name + "'s price has changed to " + number + "!");
+		//System.out.println(name + "'s price has changed to " + number + "!");
 		notifyAll();
 		//System.out.println(name + "'s price has been changed to " + number + ".");
 	}

@@ -1,8 +1,26 @@
 
 public class Application {
 	public static void main(String[] args) throws InterruptedException {
-		testBuySell();
-		//testBuyLowSellHigh();
+		//testBuySell();
+		testBuyLowSellHigh();
+		
+//		Company comp1 = new Company("Company 1", 10, 10, 100f);
+//		Test test1 = new Test(comp1,50f);
+//		Test test2 = new Test(comp1,70f);
+//		Thread t1 = new Thread(test1);
+//		Thread t2 = new Thread(test2);
+//		t1.start();
+//		Thread.sleep(100);
+//		t2.start();
+//		
+//		Thread.sleep(1000);
+//		comp1.setPrice(60f);
+//		
+//		Thread.sleep(1000);
+//		comp1.setPrice(50f);
+//		
+//		t1.join();
+//		t2.join();
 	}
 	
 	public static void testBuyLowSellHigh() throws InterruptedException {
@@ -36,11 +54,14 @@ public class Application {
 		}
 		//t1.start();
 		
-		for (int i=0; i<100; i++) {
+		for (int i=0; i<1000; i++) {
 			//System.out.println(i);
-			comp1.setPrice((float)Math.random()*100);
-			comp2.setPrice((float)Math.random()*100);
-			comp3.setPrice((float)Math.random()*100);
+//			s.changePriceBy(comp1, 50-(float)Math.random()*100);
+//			s.changePriceBy(comp2, 50-(float)Math.random()*100);
+//			s.changePriceBy(comp3, 50-(float)Math.random()*100);
+			s.setPrice(comp1, (float)Math.random()*100);
+			s.setPrice(comp2, (float)Math.random()*100);
+			s.setPrice(comp3, (float)Math.random()*100);
 		}
 		System.out.println("<Application> Finished price changes. </Application>");
 		
@@ -53,6 +74,9 @@ public class Application {
 	}
 	
 	public static void testBuySell() throws InterruptedException {
+		//Note that share balance is negative because money is being created by changing
+		// the price of random companies. Total balance is still £500 so essentially companies are in debt
+		
 		//Setup
 				int numClients = 5;
 				StockExchange s = new StockExchange();
@@ -83,7 +107,7 @@ public class Application {
 				}
 				//t1.start();
 				
-				for (int i=0; i<100; i++) {
+				for (int i=0; i<1000; i++) {
 					//System.out.println(i);
 //					comp1.setPrice((float)Math.random()*100);
 //					comp2.setPrice((float)Math.random()*100);

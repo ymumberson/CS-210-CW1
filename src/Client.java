@@ -74,47 +74,19 @@ public class Client implements Runnable {
 	
 	public boolean buyLow(Company company, float numberOfShares, float limit) {
 		company.acquireLock();
-//		if (company.getPrice() <= limit) {
-//			if (company.decrementAvailableShares((int) numberOfShares)) {
-//				incrementStocks(company,numberOfShares);
-//				balance-= company.getPrice()*numberOfShares;
-//				company.releaseLock();
-//				return true;
-//			} else {
-//				company.releaseLock();
-//				return false;
-//			}
-//		} else {
-//			company.releaseLock();
-//			try {
-//				company.wait();
-//				this.buyLow(company, numberOfShares, limit);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-		
-		//System.out.println();
-//		synchronized (company) {
-//			while (company.getPrice() > limit) {
-//				company.releaseLock();
-//				//System.out.println("Price of " + company.getName() + "'s shares is too high, client[" + name + "] is waiting for them to drop!");
-//				try {
-//					company.wait();
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				System.out.println("Client[" + name + "] was notified.");
-//				company.acquireLock();
-//			}
-//		}
-		
 		if (company.getPrice() > limit) {
 			company.releaseLock();
 			System.out.println("Client[" + name + "] is going to wait.");
 			company.waitForPriceToDrop(limit);
+			company.acquireLock();
+		}
+		
+		
+		//If can afford
+		if (company.getPrice()*numberOfShares > balance) {
+			System.out.println("Client[" + name + "] can't afford " + numberOfShares + " shares from " + company.getName() + ".");
+			company.releaseLock();
+			return false;
 		}
 		
 		//Doing the buying
@@ -181,8 +153,8 @@ public class Client implements Runnable {
 	public void run() {
 		System.out.println("Starting client[" + name + "].");
 		
-		testBuySell();
-		//testBuyLowSellHigh();
+		//testBuySell();
+		testBuyLowSellHigh();
 		
 		System.out.println("Finishing client[" + name + "].");
 	}
