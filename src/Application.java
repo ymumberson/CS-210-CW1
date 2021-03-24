@@ -4,6 +4,17 @@ public class Application {
 		//testBuySell();
 		testBuyLowSellHigh();
 		
+		int numPassed = 0;
+		int numRuns = 10000;
+		for (int i=0; i<numRuns; i++) {
+			if (testBuyLowSellHigh()) {
+				numPassed++;
+			}
+		}
+		
+		System.out.println("=====================================\n"
+				+ numPassed + "/" + numRuns + " passed.");
+		
 //		Company comp1 = new Company("Company 1", 10, 10, 100f);
 //		Test test1 = new Test(comp1,50f);
 //		Test test2 = new Test(comp1,70f);
@@ -23,8 +34,12 @@ public class Application {
 //		t2.join();
 	}
 	
-	public static void testBuyLowSellHigh() throws InterruptedException {
+	public static boolean testBuyLowSellHigh() throws InterruptedException {
 		int numClients = 5;
+		float totalSharesBefore;
+		float totalSharesAfter;
+		float totalBalanceBefore;
+		float totalBalanceAfter;
 		StockExchange s = new StockExchange();
 		Company comp1 = new Company("Company 1", 10, 10, 100f);
 		Company comp2 = new Company("Company 2", 25, 25, 100f);
@@ -47,6 +62,8 @@ public class Application {
 		//s.addClient(client1);
 		
 		System.out.println(s);
+		totalSharesBefore = s.getTotalShares();
+		totalBalanceBefore = s.getTotalBalance();
 		
 		//Starting processes
 		for (int i=0; i<numClients; i++) {
@@ -69,12 +86,12 @@ public class Application {
 		//System.out.println("Still " + Thread.activeCount() + " threads running!");
 		
 		if (Thread.activeCount() > 1) {
-			System.out.println((Thread.activeCount()-1) + " clients still running, exiting program.\n");
-			System.out.println(s);
-			System.exit(0);
-//			for (int i=0; i<numClients; i++) {
-//				threads[i].interrupt();
-//			}
+			System.out.println((Thread.activeCount()-1) + " clients still running. Executing Interrupts!");
+//			System.out.println(s);
+//			System.exit(0);
+			for (int i=0; i<numClients; i++) {
+				threads[i].interrupt();
+			}
 //			System.out.println(s);
 		}
 		
@@ -84,6 +101,13 @@ public class Application {
 		}
 		System.out.println("Execution has finished.\n");
 		System.out.println(s);
+		
+		totalSharesAfter = s.getTotalShares();
+		totalBalanceAfter = s.getTotalBalance();
+		
+		if (Math.abs(totalSharesAfter - totalSharesBefore) > 1) {return false;}
+		if (Math.abs(totalBalanceAfter - totalBalanceBefore) > 1) {return false;}
+		return true;
 	}
 	
 	public static void testBuySell() throws InterruptedException {

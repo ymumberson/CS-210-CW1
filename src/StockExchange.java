@@ -78,14 +78,22 @@ public class StockExchange {
 	}
 	
 	public void setPrice(Company company, float price) {
-		company.acquireLock();
+		try {
+			company.acquireLock();
+		} catch (InterruptedException e) {
+			return;
+		}
 		company.setPrice(price);
 		company.releaseLock();
 	}
 	
 	//TODO potential race conditions
 	public void changePriceBy(Company company, float number) {
-		company.acquireLock();
+		try {
+			company.acquireLock();
+		} catch (InterruptedException e) {
+			return;
+		}
 		float amount = company.getPrice() + number; //Read
 		if (amount <= 0) {
 			company.setPrice(0f); //Write
@@ -93,6 +101,34 @@ public class StockExchange {
 			company.setPrice(amount); //Write
 		}
 		company.releaseLock();
+	}
+	
+	public float getTotalBalance() {
+		float totalBalance = 0;
+		float shareBalance = 0;
+		for (Client c: clients) {
+			totalBalance += c.getBalance();
+		}
+		ArrayList<Company> comps = new ArrayList<Company>(companies.keySet());
+		for (int i = 0; i<comps.size(); i++) {
+			Company c = comps.get(i);
+			shareBalance += c.getStoredBalance();
+		}
+		return shareBalance+totalBalance;
+	}
+	
+	public float getTotalShares() {
+		float totalSharesSold = 0;
+		float totalSharesUnsold = 0;
+		for (Client c: clients) {
+			totalSharesSold += c.getNumShares();
+		}
+		ArrayList<Company> comps = new ArrayList<Company>(companies.keySet());
+		for (int i = 0; i<comps.size(); i++) {
+			Company c = comps.get(i);
+			totalSharesUnsold += c.getAvailableShares();
+		}
+		return totalSharesSold+totalSharesUnsold;
 	}
 	
 	public String toString() {

@@ -39,7 +39,7 @@ public class Client implements Runnable {
 		}
 	}
 	
-	public boolean buy(Company company, float numberOfShares) {
+	public boolean buy(Company company, float numberOfShares) throws InterruptedException {
 		System.out.println("Client[" + name + "] is attempting to buy " + numberOfShares + " shares from " + company.getName() + ".");
 		company.acquireLock();
 		
@@ -63,7 +63,7 @@ public class Client implements Runnable {
 		}
 	}
 	
-	public boolean sell(Company company, float numberOfShares) {
+	public boolean sell(Company company, float numberOfShares) throws InterruptedException {
 		System.out.println("Client[" + name + "] is attempting to sell " + numberOfShares + " shares to " + company.getName() + ".");
 		
 		if (!owns(company, numberOfShares)) {
@@ -72,6 +72,7 @@ public class Client implements Runnable {
 		}
 		
 		company.acquireLock();
+		
 		if (company.incrementAvailableShares(numberOfShares)) {
 			System.out.println("Client[" + name + "] successfully sold " + numberOfShares + " shares to " + company.getName() + " for " + (company.getPrice()*numberOfShares) + ".");
 			incrementStocks(company,-numberOfShares);
@@ -88,7 +89,7 @@ public class Client implements Runnable {
 		return shares.containsKey(c) && shares.get(c) >= numShares;
 	}
 	
-	public boolean buyLow(Company company, float numberOfShares, float limit) {
+	public boolean buyLow(Company company, float numberOfShares, float limit) throws InterruptedException {
 		company.acquireLock();
 		//Wait for price drop
 		if (company.getPrice() > limit) {
@@ -121,7 +122,7 @@ public class Client implements Runnable {
 		
 	}
 	
-	public boolean sellHigh(Company company, float numberOfShares, float limit) {
+	public boolean sellHigh(Company company, float numberOfShares, float limit) throws InterruptedException {
 		if (!owns(company, numberOfShares)) {
 			System.out.println("Client[" + name + "] doesn't own " + numberOfShares + " shares from " + company.getName() + ".");
 			return false;
@@ -195,15 +196,21 @@ public class Client implements Runnable {
 	public void run() {
 		System.out.println("Starting client[" + name + "].");
 		
-		//testBuySell();
-		//testBuyLowSellHigh();
-		randomRun();
+		try {
+			for (int i=0; i<100; i++) {
+				//testBuySell();
+				//testBuyLowSellHigh();
+				randomRun();	
+			}	
+		} catch (InterruptedException e) {
+			System.out.println("Client[" + name + "] was interrupted!");
+		}
+		
 		
 		System.out.println("Finishing client[" + name + "].");
 	}
 	
-	public void randomRun() {
-		for (int i=0; i<100; i++) {
+	public void randomRun() throws InterruptedException {
 			int rnd = (int)(Math.random()*4);
 			//System.out.println(rnd);
 			switch (rnd) {
@@ -222,15 +229,14 @@ public class Client implements Runnable {
 			default:
 				buyRandomShares();	
 			}
-		}
 	}
 	
-	public void testBuyLowSellHigh() {
+	public void testBuyLowSellHigh() throws InterruptedException {
 		randomBuyLow();
 		randomSellHigh();
 	}
 	
-	private void randomBuyLow() {
+	private void randomBuyLow() throws InterruptedException {
 		Company c = stockExchange.getRandomCompany();
 		float sharesToBuy = (float)(Math.random() * 11f);
 		float p = (float) Math.random() * 50f;
@@ -238,7 +244,7 @@ public class Client implements Runnable {
 		buyLow(c,sharesToBuy,p);
 	}
 	
-	private void randomSellHigh() {
+	private void randomSellHigh() throws InterruptedException {
 		ArrayList<Company> companies = new ArrayList<Company>(shares.keySet());
 		if (companies.isEmpty()) {return;}
 		int rnd = (int)(Math.random()*companies.size());
@@ -249,7 +255,7 @@ public class Client implements Runnable {
 		sellHigh(c,numSharesToSell,p);
 	}
 	
-	private void testBuySell() {
+	private void testBuySell() throws InterruptedException {
 		for (int i=0; i<100; i++) {
 			int rnd = (int)(Math.random()*2);
 			//System.out.println(rnd);
@@ -266,7 +272,7 @@ public class Client implements Runnable {
 		}
 	}
 	
-	private void buyRandomShares() {
+	private void buyRandomShares() throws InterruptedException {
 		Company c = stockExchange.getRandomCompany();
 		//int sharesToBuy = (int) (Math.random() * stockExchange.getMaxAffordableShares(c, balance));
 		float sharesToBuy = (float) (Math.random() * 11f);
@@ -278,7 +284,7 @@ public class Client implements Runnable {
 		}
 	}
 	
-	private void sellRandomShares() {
+	private void sellRandomShares() throws InterruptedException {
 		ArrayList<Company> companies = new ArrayList<Company>(shares.keySet());
 		
 		if (companies.isEmpty()) {return;}

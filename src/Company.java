@@ -75,47 +75,23 @@ public class Company {
 		return lock.tryAcquire();
 	}
 	
-	public void acquireLock() {
-		try {
-			lock.acquire();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Thread was interrupted!");
-			e.printStackTrace();
-		}
+	public void acquireLock() throws InterruptedException {
+		lock.acquire();
 	}
 	
 	public void releaseLock() {
 		lock.release();
 	}
 	
-	public synchronized void waitForPriceToDrop(float amnt) {
+	public synchronized void waitForPriceToDrop(float amnt) throws InterruptedException {
 		while (price > amnt) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalMonitorStateException e2) {
-				System.out.println("<CRASH> Illegal monitor state!" + Thread.currentThread().getName());
-				//lock.release();
-				System.exit(0);
-			}
+			wait();
 		}
 	}
 	
-	public synchronized void waitForPriceToRise(float amnt) {
+	public synchronized void waitForPriceToRise(float amnt) throws InterruptedException {
 		while (price < amnt) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalMonitorStateException e2) {
-				System.out.println("<CRASH> Illegal monitor state!" + Thread.currentThread().getName());
-				//lock.release();
-				System.exit(0);
-			}
+			wait();
 		}
 	}
 	
