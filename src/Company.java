@@ -8,7 +8,6 @@ public class Company {
 	private float price;
 	private Semaphore lock;
 	private float storedBalance;
-	private ArrayList<Float> notifyPrices;
 	
 	public Company() {
 		
@@ -20,7 +19,6 @@ public class Company {
 		this.setAvailableShares(availableShares);
 		this.setPrice(price);
 		this.lock = new Semaphore(1);
-		this.notifyPrices = new ArrayList<Float>();
 	}
 	
 	public void setName(String name) {
@@ -51,8 +49,7 @@ public class Company {
 		if (availableNumberOfShares+n <= totalNumberOfShares) {
 			availableNumberOfShares+=n;
 			storedBalance-=price*n;
-			System.out.println(name + " just regained " + n + " shares! Now "
-					+ availableNumberOfShares + " shares left!");
+			//System.out.println(name + " just regained " + n + " shares! Now " + availableNumberOfShares + " shares left!");
 			return true;
 		} else {
 			return false;
@@ -63,8 +60,7 @@ public class Company {
 		if (availableNumberOfShares-n >= 0) {
 			availableNumberOfShares-=n;
 			storedBalance+= price*n;
-			System.out.println(name + " just sold " + n + " shares! Only "
-					+ availableNumberOfShares + " shares left!");
+			//System.out.println(name + " just sold " + n + " shares! Only " + availableNumberOfShares + " shares left!");
 			return true;
 		} else {
 			return false;
@@ -97,9 +93,7 @@ public class Company {
 	
 	public synchronized void setPrice(float number) {
 		this.price = number;
-		//System.out.println(name + "'s price has changed to " + number + "!");
 		notifyAll();
-		//System.out.println(name + "'s price has been changed to " + number + ".");
 	}
 	
 	public float getPrice() {

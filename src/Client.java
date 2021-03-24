@@ -40,41 +40,41 @@ public class Client implements Runnable {
 	}
 	
 	public boolean buy(Company company, float numberOfShares) throws InterruptedException {
-		System.out.println("Client[" + name + "] is attempting to buy " + numberOfShares + " shares from " + company.getName() + ".");
+		//System.out.println("Client[" + name + "] is attempting to buy " + numberOfShares + " shares from " + company.getName() + ".");
 		company.acquireLock();
 		
 		//If can afford
 		if (company.getPrice()*numberOfShares > balance) {
-			System.out.println("Client[" + name + "] can't afford " + numberOfShares + " shares from " + company.getName() + ".");
+			//System.out.println("Client[" + name + "] can't afford " + numberOfShares + " shares from " + company.getName() + ".");
 			company.releaseLock();
 			return false;
 		}
 		
 		if (company.decrementAvailableShares(numberOfShares)) {
-			System.out.println("Client[" + name + "] successfully bought " + numberOfShares + " shares from " + company.getName() + " for " + (numberOfShares*company.getPrice()) + ".");
+			//System.out.println("Client[" + name + "] successfully bought " + numberOfShares + " shares from " + company.getName() + " for " + (numberOfShares*company.getPrice()) + ".");
 			incrementStocks(company,numberOfShares);
 			balance-= company.getPrice()*numberOfShares;
 			company.releaseLock();
 			return true;
 		} else {
-			System.out.println("Client[" + name + "] failed in buying " + numberOfShares + " shares from " + company.getName() + ".");
+			//System.out.println("Client[" + name + "] failed in buying " + numberOfShares + " shares from " + company.getName() + ".");
 			company.releaseLock();
 			return false;
 		}
 	}
 	
 	public boolean sell(Company company, float numberOfShares) throws InterruptedException {
-		System.out.println("Client[" + name + "] is attempting to sell " + numberOfShares + " shares to " + company.getName() + ".");
+		//System.out.println("Client[" + name + "] is attempting to sell " + numberOfShares + " shares to " + company.getName() + ".");
 		
 		if (!owns(company, numberOfShares)) {
-			System.out.println("Client[" + name + "] doesn't own " + numberOfShares + " shares from " + company.getName() + ".");
+			//System.out.println("Client[" + name + "] doesn't own " + numberOfShares + " shares from " + company.getName() + ".");
 			return false;
 		}
 		
 		company.acquireLock();
 		
 		if (company.incrementAvailableShares(numberOfShares)) {
-			System.out.println("Client[" + name + "] successfully sold " + numberOfShares + " shares to " + company.getName() + " for " + (company.getPrice()*numberOfShares) + ".");
+			//System.out.println("Client[" + name + "] successfully sold " + numberOfShares + " shares to " + company.getName() + " for " + (company.getPrice()*numberOfShares) + ".");
 			incrementStocks(company,-numberOfShares);
 			balance+= company.getPrice()*numberOfShares;
 			company.releaseLock();
@@ -94,7 +94,7 @@ public class Client implements Runnable {
 		//Wait for price drop
 		if (company.getPrice() > limit) {
 			company.releaseLock();
-			System.out.println("Client[" + name + "] is going to wait.");
+			//System.out.println("Client[" + name + "] is going to wait.");
 			company.waitForPriceToDrop(limit);
 			company.acquireLock();
 		}
@@ -102,7 +102,7 @@ public class Client implements Runnable {
 		
 		//If can afford
 		if (company.getPrice()*numberOfShares > balance) {
-			System.out.println("Client[" + name + "] can't afford " + numberOfShares + " shares from " + company.getName() + ".");
+			//System.out.println("Client[" + name + "] can't afford " + numberOfShares + " shares from " + company.getName() + ".");
 			company.releaseLock();
 			return false;
 		}
@@ -112,11 +112,11 @@ public class Client implements Runnable {
 			incrementStocks(company,numberOfShares);
 			balance-= company.getPrice()*numberOfShares;
 			company.releaseLock();
-			System.out.println("Client[" + name + "] successfully bought " + numberOfShares + " shares from " + company.getName() + ".");
+			//System.out.println("Client[" + name + "] successfully bought " + numberOfShares + " shares from " + company.getName() + ".");
 			return true;
 		} else {
 			company.releaseLock();
-			System.out.println("Client[" + name + "] failed in buying " + numberOfShares + " shares from " + company.getName() + ".");
+			//System.out.println("Client[" + name + "] failed in buying " + numberOfShares + " shares from " + company.getName() + ".");
 			return false;
 		}
 		
@@ -124,7 +124,7 @@ public class Client implements Runnable {
 	
 	public boolean sellHigh(Company company, float numberOfShares, float limit) throws InterruptedException {
 		if (!owns(company, numberOfShares)) {
-			System.out.println("Client[" + name + "] doesn't own " + numberOfShares + " shares from " + company.getName() + ".");
+			//System.out.println("Client[" + name + "] doesn't own " + numberOfShares + " shares from " + company.getName() + ".");
 			return false;
 		}
 		
@@ -132,14 +132,14 @@ public class Client implements Runnable {
 		//Wait for price rise
 		if (company.getPrice() < limit) {
 			company.releaseLock();
-			System.out.println("Client[" + name + "] is going to wait.");
+			//System.out.println("Client[" + name + "] is going to wait.");
 			company.waitForPriceToRise(limit);
 			company.acquireLock();
 		}
 		
 		//Do the selling
 		if (company.incrementAvailableShares(numberOfShares)) {
-			System.out.println("Client[" + name + "] successfully sold " + numberOfShares + " shares to " + company.getName() + " for " + (company.getPrice()*numberOfShares) + ".");
+			//System.out.println("Client[" + name + "] successfully sold " + numberOfShares + " shares to " + company.getName() + " for " + (company.getPrice()*numberOfShares) + ".");
 			incrementStocks(company,-numberOfShares);
 			balance+= company.getPrice()*numberOfShares;
 			company.releaseLock();
@@ -194,20 +194,21 @@ public class Client implements Runnable {
 	
 	@Override
 	public void run() {
-		System.out.println("Starting client[" + name + "].");
+		//System.out.println("Starting client[" + name + "].");
 		
 		try {
-			for (int i=0; i<100; i++) {
+			//for (int i=0; i<100; i++) {
+			while (true) {
 				//testBuySell();
 				//testBuyLowSellHigh();
 				randomRun();	
 			}	
 		} catch (InterruptedException e) {
-			System.out.println("Client[" + name + "] was interrupted!");
+			//System.out.println("Client[" + name + "] was interrupted!");
 		}
 		
 		
-		System.out.println("Finishing client[" + name + "].");
+		//System.out.println("Finishing client[" + name + "].");
 	}
 	
 	public void randomRun() throws InterruptedException {
@@ -240,7 +241,7 @@ public class Client implements Runnable {
 		Company c = stockExchange.getRandomCompany();
 		float sharesToBuy = (float)(Math.random() * 11f);
 		float p = (float) Math.random() * 50f;
-		System.out.println("Client[" + name + "] wants " + c.getName() + "'s price to drop below " + p + ".");
+		//System.out.println("Client[" + name + "] wants " + c.getName() + "'s price to drop below " + p + ".");
 		buyLow(c,sharesToBuy,p);
 	}
 	
@@ -251,7 +252,7 @@ public class Client implements Runnable {
 		Company c = companies.get(rnd);
 		float numSharesToSell = (float)(Math.random()*shares.get(c));
 		float p = (float) Math.random() * 100f;
-		System.out.println("Client[" + name + "] wants " + c.getName() + "'s price to raise above " + p + ".");
+		//System.out.println("Client[" + name + "] wants " + c.getName() + "'s price to raise above " + p + ".");
 		sellHigh(c,numSharesToSell,p);
 	}
 	
@@ -274,14 +275,8 @@ public class Client implements Runnable {
 	
 	private void buyRandomShares() throws InterruptedException {
 		Company c = stockExchange.getRandomCompany();
-		//int sharesToBuy = (int) (Math.random() * stockExchange.getMaxAffordableShares(c, balance));
 		float sharesToBuy = (float) (Math.random() * 11f);
-			//System.out.println("Client[" + name + "] is attempting to buy " + sharesToBuy + " shares from " + c.getName() + ".");
-		if (buy(c, sharesToBuy)) {
-			//System.out.println("Client[" + name + "] successfully bought " + sharesToBuy + " shares from " + c.getName() + ".");
-		} else {
-			//System.out.println("Client[" + name + "] failed in buying " + sharesToBuy + " shares from " + c.getName() + ".");
-		}
+		buy(c, sharesToBuy);
 	}
 	
 	private void sellRandomShares() throws InterruptedException {
@@ -292,9 +287,7 @@ public class Client implements Runnable {
 		int rnd = (int)(Math.random()*companies.size());
 		Company c = companies.get(rnd);
 		float numSharesToSell = (float)(Math.random()*shares.get(c));
-		//System.out.println("Client[" + name + "] is attempting to sell " + numSharesToSell + " shares to " + c.getName() + ".");
 		sell(c, numSharesToSell);
-		//System.out.println("Client[" + name + "] successfully sold " + numSharesToSell + " shares to " + c.getName() + ".");
 	}
 	
 	public String toString() {
