@@ -62,8 +62,21 @@ public class Application {
 			s.setPrice(comp1, (float)Math.random()*100);
 			s.setPrice(comp2, (float)Math.random()*100);
 			s.setPrice(comp3, (float)Math.random()*100);
+			//System.out.println(s);
 		}
 		System.out.println("<Application> Finished price changes. </Application>");
+		
+		//System.out.println("Still " + Thread.activeCount() + " threads running!");
+		
+		if (Thread.activeCount() > 1) {
+			System.out.println((Thread.activeCount()-1) + " clients still running, exiting program.\n");
+			System.out.println(s);
+			System.exit(0);
+//			for (int i=0; i<numClients; i++) {
+//				threads[i].interrupt();
+//			}
+//			System.out.println(s);
+		}
 		
 		//Finishing processes
 		for (int i=0; i<numClients; i++) {

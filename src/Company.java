@@ -47,7 +47,7 @@ public class Company {
 		return this.availableNumberOfShares;
 	}
 	
-	public synchronized boolean incrementAvailableShares(int n) {
+	public synchronized boolean incrementAvailableShares(float n) {
 		if (availableNumberOfShares+n <= totalNumberOfShares) {
 			availableNumberOfShares+=n;
 			storedBalance-=price*n;
@@ -59,7 +59,7 @@ public class Company {
 		}
 	}
 	
-	public synchronized boolean decrementAvailableShares(int n) {
+	public synchronized boolean decrementAvailableShares(float n) {
 		if (availableNumberOfShares-n >= 0) {
 			availableNumberOfShares-=n;
 			storedBalance+= price*n;
@@ -98,7 +98,22 @@ public class Company {
 				e.printStackTrace();
 			} catch (IllegalMonitorStateException e2) {
 				System.out.println("<CRASH> Illegal monitor state!" + Thread.currentThread().getName());
-				lock.release();
+				//lock.release();
+				System.exit(0);
+			}
+		}
+	}
+	
+	public synchronized void waitForPriceToRise(float amnt) {
+		while (price < amnt) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalMonitorStateException e2) {
+				System.out.println("<CRASH> Illegal monitor state!" + Thread.currentThread().getName());
+				//lock.release();
 				System.exit(0);
 			}
 		}
