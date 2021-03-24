@@ -88,7 +88,7 @@ public class Application {
 	
 	public static void testBuySell() throws InterruptedException {
 		//Note that share balance is negative because money is being created by changing
-		// the price of random companies. Total balance is still £500 so essentially companies are in debt
+		// the price of random companies. Total balance is still 500 so essentially companies are in debt
 		
 		//Setup
 				int numClients = 5;
