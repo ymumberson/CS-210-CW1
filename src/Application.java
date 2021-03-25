@@ -1,5 +1,14 @@
-
+/**
+ * Headless application for testing
+ * @author Yoshan Mumberson 1911116
+ *
+ */
 public class Application {
+	/**
+	 * Tests the stock exchange
+	 * @param args
+	 * @throws InterruptedException
+	 */
 	public static void main(String[] args) throws InterruptedException {
 		//testBuySell();
 		//testBuyLowSellHigh();
@@ -18,6 +27,11 @@ public class Application {
 		
 	}
 	
+	/**
+	 * Stress testing with really crazy numbers
+	 * @return
+	 * @throws InterruptedException
+	 */
 	public static boolean crazyTest() throws InterruptedException {
 		int numClients = 100;
 		int numCompanies = 10;
@@ -103,6 +117,11 @@ public class Application {
 		return true;
 	}
 	
+	/**
+	 * Stress testing with normal numbers
+	 * @return
+	 * @throws InterruptedException
+	 */
 	public static boolean normalTest() throws InterruptedException {
 		int numClients = 100;
 		float totalSharesBefore;

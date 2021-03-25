@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 /**
  * Models a client in a stock exchange system
- * @author Yoshan Mumberson
+ * @author Yoshan Mumberson 1911116
  *
  */
 public class Client implements Runnable {
@@ -156,7 +156,7 @@ public class Client implements Runnable {
 	 * Buys stocks from a company when the company's price drops to a limit
 	 * @param company Company to buy shares from
 	 * @param numberOfShares Number of shares
-	 * @param limit Low price to buy shares at
+	 * @param limit Low price to buy shares at (or lower)
 	 * @return True if successful, else false
 	 * @throws InterruptedException Throws if interrupted while waiting to buy
 	 */
@@ -193,6 +193,14 @@ public class Client implements Runnable {
 		
 	}
 	
+	/**
+	 * Sells shares back to a company once the company's price rises to a given limit
+	 * @param company Company to sell shares to
+	 * @param numberOfShares Number of shares to sell
+	 * @param limit High price to sell shares at (or higher)
+	 * @return True if successful, else false
+	 * @throws InterruptedException Throws if interrupted while waiting to sell
+	 */
 	public boolean sellHigh(Company company, float numberOfShares, float limit) throws InterruptedException {
 		if (!owns(company, numberOfShares)) {
 			//System.out.println("Client[" + name + "] doesn't own " + numberOfShares + " shares from " + company.getName() + ".");
@@ -221,6 +229,11 @@ public class Client implements Runnable {
 		}
 	}
 	
+	/**
+	 * Adds money to the client's balance
+	 * @param amount Amount of money to add
+	 * @return False if amount is negative, otherwise true
+	 */
 	public boolean deposit(float amount) {
 		if (amount < 0) {
 			return false;
@@ -230,6 +243,11 @@ public class Client implements Runnable {
 		}
 	}
 	
+	/**
+	 * Subtracts money from the client's balance
+	 * @param amount Amount of money to subtract
+	 * @return False if amount is negative, otherwise true
+	 */
 	public boolean withdraw(float amount) {
 		if (amount < 0) {
 			return false;
@@ -239,18 +257,34 @@ public class Client implements Runnable {
 		}
 	}
 	
+	/**
+	 * Setter for name
+	 * @param name New value for name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 	
-	public String getName(String name) {
+	/**
+	 * Getter for name
+	 * @return Client's name
+	 */
+	public String getName() {
 		return this.name;
 	}
 	
+	/**
+	 * Getter for balance
+	 * @return Client's balance
+	 */
 	public float getBalance() {
 		return this.balance;
 	}
 	
+	/**
+	 * Gets total amount of shares that the client owns
+	 * @return Total amount of shares the client owns
+	 */
 	public float getNumShares() {
 		float totalShares = 0;
 		ArrayList<Company> companies = new ArrayList<Company>(shares.keySet());
@@ -260,6 +294,10 @@ public class Client implements Runnable {
 		return totalShares;
 	}
 	
+	/**
+	 * Gets the total value of all of the shares that the client owns
+	 * @return total value of all of the shares that the client owns
+	 */
 	public float getShareBalance() {
 		float totalValue = 0;
 		ArrayList<Company> companies = new ArrayList<Company>(shares.keySet());
@@ -289,6 +327,10 @@ public class Client implements Runnable {
 		//System.out.println("Finishing client[" + name + "].");
 	}
 	
+	/**
+	 * Simulates a random run of buying shares, selling shares, buying low and selling high
+	 * @throws InterruptedException Throws if interrupted while running
+	 */
 	public void randomRun() throws InterruptedException {
 			int rnd = (int)(Math.random()*4);
 			//System.out.println(rnd);
@@ -310,11 +352,19 @@ public class Client implements Runnable {
 			}
 	}
 	
+	/**
+	 * Tests buying low and selling high
+	 * @throws InterruptedException Throws if interrupted while running
+	 */
 	public void testBuyLowSellHigh() throws InterruptedException {
 		randomBuyLow();
 		randomSellHigh();
 	}
 	
+	/**
+	 * Tests buying low
+	 * @throws InterruptedException Throws if interrupted while running
+	 */
 	private void randomBuyLow() throws InterruptedException {
 		Company c = stockExchange.getRandomCompany();
 		float sharesToBuy = (float)(Math.random() * 11f);
@@ -323,6 +373,10 @@ public class Client implements Runnable {
 		buyLow(c,sharesToBuy,p);
 	}
 	
+	/**
+	 * Tests selling high
+	 * @throws InterruptedException Throws if interrupted while running
+	 */
 	private void randomSellHigh() throws InterruptedException {
 		ArrayList<Company> companies = new ArrayList<Company>(shares.keySet());
 		if (companies.isEmpty()) {return;}
@@ -334,6 +388,10 @@ public class Client implements Runnable {
 		sellHigh(c,numSharesToSell,p);
 	}
 	
+	/**
+	 * Tests randomly either a buy or a sell
+	 * @throws InterruptedException Throws if interrupted while running
+	 */
 	private void testBuySell() throws InterruptedException {
 		for (int i=0; i<100; i++) {
 			int rnd = (int)(Math.random()*2);
@@ -351,12 +409,20 @@ public class Client implements Runnable {
 		}
 	}
 	
+	/**
+	 * Buys a random share
+	 * @throws InterruptedException Throws if interrupted while running
+	 */
 	private void buyRandomShares() throws InterruptedException {
 		Company c = stockExchange.getRandomCompany();
 		float sharesToBuy = (float) (Math.random() * 11f);
 		buy(c, sharesToBuy);
 	}
 	
+	/**
+	 * Sells a random share
+	 * @throws InterruptedException Throws if interrupted while running
+	 */
 	private void sellRandomShares() throws InterruptedException {
 		ArrayList<Company> companies = new ArrayList<Company>(shares.keySet());
 		
@@ -368,6 +434,9 @@ public class Client implements Runnable {
 		sell(c, numSharesToSell);
 	}
 	
+	/**
+	 * Converts the client to a readable string
+	 */
 	public String toString() {
 		String str = "Client[" + name + "],\n- Balance: " + balance + ",";
 		if (shares.isEmpty()) {

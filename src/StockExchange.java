@@ -1,18 +1,36 @@
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
 
+/**
+ * Models a stock exchange
+ * @author Yoshan Mumberson 1911116
+ *
+ */
 public class StockExchange {
+	/**
+	 * List of companies in the stock exchange, and how many stocks they have available
+	 */
 	private HashMap<Company, Float> companies;
+	
+	/**
+	 * List of clients in the stock exchange
+	 */
 	private ArrayList<Client> clients;
 	
+	/**
+	 * Blank constructor
+	 */
 	public StockExchange() {
 		companies = new HashMap<Company, Float>();
 		clients = new ArrayList<Client>();
 	}
 	
+	/**
+	 * Registers a company into the stock exchange
+	 * @param company Company to register
+	 * @param numberOfShares Number of shares the company has available
+	 * @return True if successful, otherwise false
+	 */
 	public boolean registerCompany(Company company, float numberOfShares) {
 		if (companies.containsKey(company)) {
 			return false; //Company already exists
@@ -23,6 +41,11 @@ public class StockExchange {
 		}
 	}
 	
+	/**
+	 * Removes a company from the stock exchange
+	 * @param company Company to remove
+	 * @return True of successful, otherwise false
+	 */
 	public boolean deregisterCompany(Company company) {
 		if (companies.containsKey(company)) {
 			companies.remove(company);
@@ -33,6 +56,11 @@ public class StockExchange {
 		}
 	}
 	
+	/**
+	 * Adds a client to the stock exchange
+	 * @param client Client to add to the stock exchange
+	 * @return True if successful, otherwise false
+	 */
 	public boolean addClient(Client client) {
 		if (clients.contains(client)) {
 			return false;//Client already exists
@@ -43,6 +71,11 @@ public class StockExchange {
 		}
 	}
 	
+	/**
+	 * Removes a client from the stock exchange
+	 * @param client Client to remove
+	 * @return True if successful, otherwise false
+	 */
 	public boolean removeClient(Client client) {
 		if (clients.contains(client)) {
 			clients.remove(client);
@@ -53,23 +86,41 @@ public class StockExchange {
 		}
 	}
 	
+	/**
+	 * Getter for clients
+	 * @return List of all clients in the stock exchange
+	 */
 	public ArrayList<Client> getClients() {
 		return this.clients;
 	}
 	
+	/**
+	 * Getter for companies
+	 * @return List of all companies in the stock exchange
+	 */
 	public HashMap<Company, Float> getCompanies() {
 		return this.companies;
 	}
 	
+	/**
+	 * Gets a random company from the stock exchange
+	 * @return Random company from the stock exchange
+	 */
 	public Company getRandomCompany() {
 		int randomID = (int)(Math.random() * companies.size());
 		ArrayList<Company> ls = new ArrayList<Company>(companies.keySet());
 		return ls.get(randomID);
 	}
 	
-	public int getMaxAffordableShares(Company c, float balance) {
-		int numAffordable = (int) Math.floor(balance / c.getPrice());
-		int availableShares = (int) c.getAvailableShares();
+	/**
+	 * Gets the maximum affordable shares from a company for a given balance
+	 * @param c Company to buy shares from
+	 * @param balance Balance of client
+	 * @return Number of shares affordable
+	 */
+	public float getMaxAffordableShares(Company c, float balance) {
+		float numAffordable = (float) Math.floor(balance / c.getPrice());
+		float availableShares = (float) c.getAvailableShares();
 		if (numAffordable <= availableShares) {
 			return numAffordable;
 		} else {
@@ -77,6 +128,11 @@ public class StockExchange {
 		}
 	}
 	
+	/**
+	 * Sets the price of a company, aborts if interrupted
+	 * @param company Company
+	 * @param price Price
+	 */
 	public void setPrice(Company company, float price) {
 		try {
 			company.acquireLock();
@@ -87,7 +143,11 @@ public class StockExchange {
 		company.releaseLock();
 	}
 	
-	//TODO potential race conditions
+	/**
+	 * Changes price of a company's shares by a given amount, aborts if interrupted
+	 * @param company Company
+	 * @param number Amount to change by
+	 */
 	public void changePriceBy(Company company, float number) {
 		try {
 			company.acquireLock();
@@ -103,6 +163,11 @@ public class StockExchange {
 		company.releaseLock();
 	}
 	
+	/**
+	 * Gets the total balance in circulation.<br>
+	 * (For testing)
+	 * @return Total balance in circulation
+	 */
 	public float getTotalBalance() {
 		float totalBalance = 0;
 		float shareBalance = 0;
@@ -117,6 +182,11 @@ public class StockExchange {
 		return shareBalance+totalBalance;
 	}
 	
+	/**
+	 * Gets the total number of shares in circulation<br>
+	 * (For testing)
+	 * @return Total number of shares in circulation
+	 */
 	public float getTotalShares() {
 		float totalSharesSold = 0;
 		float totalSharesUnsold = 0;
@@ -131,6 +201,9 @@ public class StockExchange {
 		return totalSharesSold+totalSharesUnsold;
 	}
 	
+	/**
+	 * Converts the stock exchange to a readable string
+	 */
 	public String toString() {
 		float totalBalance = 0;
 		float shareBalance = 0;
