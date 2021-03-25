@@ -21,7 +21,7 @@ public class Application {
 	public static boolean crazyTest() throws InterruptedException {
 		int numClients = 100;
 		int numCompanies = 10;
-		int numPriceChanges = 10000;
+		int numPriceChanges = 100000;
 		float totalSharesBefore;
 		float totalSharesAfter;
 		float totalBalanceBefore;
@@ -93,7 +93,8 @@ public class Application {
 		//System.out.println("Total Balance Before: " + totalBalanceBefore + ", Total Balance After: " + totalBalanceAfter);
 		
 		
-		float tolerence = 0.5f;
+		//float tolerence = 0.5f;
+		float tolerence = 0.00001f * numPriceChanges;
 		//System.out.println("tolerence: " + tolerence);
 		System.out.println("Balance Diff: " + Math.abs(totalBalanceAfter - totalBalanceBefore) + "/" + tolerence);
 		

@@ -92,7 +92,7 @@ public class StockExchange {
 		try {
 			company.acquireLock();
 		} catch (InterruptedException e) {
-			return;
+			return; //Aborts change if interrupted
 		}
 		float amount = company.getPrice() + number; //Read
 		if (amount <= 0) {
